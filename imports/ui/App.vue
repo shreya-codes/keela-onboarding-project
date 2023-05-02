@@ -4,11 +4,12 @@
 			<div class="app-bar">
 				<div class="app-header">
 					<h1>To Do List</h1>
+					{{ tasks }}
 				</div>
 			</div>
 		</header>
 		<div class="main">
-			<template v-if="currentUser">
+			<template v-if="!currentUser">
 				<TaskForm />
 				<div class="filter">
 					<button @click="toggleHideCompleted">
@@ -33,12 +34,13 @@
 
 <script>
 import Vue from 'vue';
+import { Meteor } from "meteor/meteor";
 import Task from './components/Task.vue';
 import { TasksCollection } from '../api/TasksCollection';
 import TaskForm from './components/TaskForm.vue';
 import LoginForm from './components/LoginForm.vue';
 
-export default {
+export default{
 	components: {
 		Task,
 		TaskForm,
@@ -57,21 +59,26 @@ export default {
 
 	computed: {
 		tasks() {
-			if(!this.currentUser){return []}
-			const hideCompletedFilter = {isChecked:{$ne:true}}
-			let filteredTasks = TasksCollection.find({}).fetch();
+			console.log(TasksCollection.find({}).fetch(),'current user ')
+			if(this.currentUser){
+				return [];
 
-			console.log(filteredTasks);
-			if (this.hideCompleted) {
-				filteredTasks = filteredTasks.filter((task) => !task.checked);
 			}
+			const hideCompletedFilter={isChecked:{$ne:true}};
+			const userFilter = this.currentUser ? {userId: this.currentUser._id}:{};
+			const pendingOnlyFilter = {...hideCompletedFilter,...userFilter};
+			return TasksCollection.find(
+				this.hideCompleted ? pendingOnlyFilter : userFilter,{
+					sort:{createdAt:-1},
+				}
+			).fetch();
 
-			return filteredTasks;
 		},
 		incompleteCount() {
-			return TasksCollection.find({ checked: { $ne: true } }).count();
+			return TasksCollection.find({ isChecked: { $ne: true } },user);
 		},
 		currentUser() {
+			console.log('here',Meteor.user())
 			return Meteor.user();
 		},
 	},

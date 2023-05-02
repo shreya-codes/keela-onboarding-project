@@ -5,20 +5,25 @@
 	</form>
 </template>
 
-<script>    
+<script>
+import { Meteor } from "meteor/meteor";
 import { TasksCollection } from '../../api/TasksCollection'
 
 export default {
 	data() {
-		return { newTask: 'dsfdsdf' };
+		return { newTask: 'newtask' };
 	},
 	methods: {
 		handleSubmit(event) {
-            console.log(this.newTask)
-TasksCollection.insert({
-    text:this.newTask,createdAt:new Date()
-})
-this.newTask=''
+			if(this.newTask.length === 0 ){return;}
+			const user = Meteor.user()
+			console.log(user)
+			TasksCollection.insert({
+				text:this.newTask,
+				createdAt:new Date(),
+				userId:user._id
+			})
+			this.newTask=''
         },
 	},
 };
