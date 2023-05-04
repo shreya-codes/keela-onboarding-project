@@ -1,6 +1,7 @@
 import { Meteor } from "meteor/meteor";
 import { Accounts } from "meteor/accounts-base";
 import { TasksCollection } from "../imports/api/TasksCollection";
+
 const insertTask = (taskText, user) => {
   TasksCollection.insert({
     text: taskText,
@@ -9,19 +10,18 @@ const insertTask = (taskText, user) => {
   });
 };
 
-const USERNAME = "shreya";
-const PASSWORD = "testing";
+const SEED_USERNAME = "meteorite";
+const SEED_PASSWORD = "password";
+
 Meteor.startup(() => {
-  if (!Accounts.findUserByUsername(USERNAME)) {
+  if (!Accounts.findUserByUsername(SEED_USERNAME)) {
     Accounts.createUser({
-      username: USERNAME,
-      password: PASSWORD,
+      username: SEED_USERNAME,
+      password: SEED_PASSWORD,
     });
   }
-  const user = Accounts.findUserByUsername(USERNAME);
-  console.log(user, "here is the tasks");
+  const user = Accounts.findUserByUsername(SEED_USERNAME);
   if (TasksCollection.find().count() === 0) {
-    console.log(user, "the collection is empty ");
     [
       "First Task",
       "Second Task",

@@ -4,16 +4,14 @@
 			<div class="app-bar">
 				<div class="app-header">
 					<h1>To Do List</h1>
-					{{ tasks }}
 				</div>
 			</div>
 		</header>
 		<div class="main">
-			<template v-if="!currentUser">
+			<template v-if="currentUser">
 				<TaskForm />
 				<div class="filter">
 					<button @click="toggleHideCompleted">
-						{{ this.hideCompleted }}
 						<span v-if="hideCompleted">Show All</span>
 						<span v-else>Hide Completed Tasks</span>
 					</button>
@@ -56,31 +54,35 @@ export default{
 			this.hideCompleted = !this.hideCompleted;
 		},
 	},
-
+meteor:{
+	currentUser() {
+		console.log(Meteor.user())
+			return Meteor.user();
+		},
+},
 	computed: {
 		tasks() {
-			console.log(TasksCollection.find({}).fetch(),'current user ')
-			if(this.currentUser){
+			console.log('-----')
+			if(!this.currentUser){
 				return [];
 
 			}
 			const hideCompletedFilter={isChecked:{$ne:true}};
 			const userFilter = this.currentUser ? {userId: this.currentUser._id}:{};
 			const pendingOnlyFilter = {...hideCompletedFilter,...userFilter};
-			return TasksCollection.find(
+			const task= TasksCollection.find(
 				this.hideCompleted ? pendingOnlyFilter : userFilter,{
 					sort:{createdAt:-1},
 				}
 			).fetch();
+			console.log(task)
+			return task
 
 		},
 		incompleteCount() {
-			return TasksCollection.find({ isChecked: { $ne: true } },user);
+			return TasksCollection.find({ isChecked: { $ne: true } ,userId:this.currentUser._id});
 		},
-		currentUser() {
-			console.log('here',Meteor.user())
-			return Meteor.user();
-		},
+		
 	},
 };
 </script>

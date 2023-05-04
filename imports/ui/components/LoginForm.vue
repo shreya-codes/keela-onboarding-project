@@ -40,6 +40,7 @@ export default {
 	},
 	methods: {
 		handleSubmit(event) {
+			console.log(this.username,this.password,'ppppp')
 			Meteor.loginWithPassword(this.username, this.password);
 		},
 	},

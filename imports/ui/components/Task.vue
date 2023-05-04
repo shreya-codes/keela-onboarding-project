@@ -25,7 +25,6 @@ export default {
 	},
 	methods: {
 		toggleChecked() {
-			console.log(this.task.checked);
 			TasksCollection.update(this.task._id, {
 				$set: { checked: !this.task.checked },
 			});

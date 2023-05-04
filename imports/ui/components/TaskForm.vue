@@ -17,7 +17,6 @@ export default {
 		handleSubmit(event) {
 			if(this.newTask.length === 0 ){return;}
 			const user = Meteor.user()
-			console.log(user)
 			TasksCollection.insert({
 				text:this.newTask,
 				createdAt:new Date(),
