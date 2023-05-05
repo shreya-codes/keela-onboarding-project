@@ -12,7 +12,8 @@
 </template>
 
 <script>
-import { TasksCollection } from '../../api/TasksCollection';
+// import { VueMeteor } from 'vue-meteor-tracker';
+import { TasksCollection } from '../../db/TasksCollection';
 export default {
 	props: ['task'],
 	data() {
@@ -25,12 +26,15 @@ export default {
 	},
 	methods: {
 		toggleChecked() {
-			TasksCollection.update(this.task._id, {
-				$set: { checked: !this.task.checked },
-			});
+			Meteor.call('tasks.setIsChecked',this.task._id,!this.task.isChecked)
+			// TasksCollection.update(this.task._id, {
+			// 	$set: { checked: !this.task.checked },
+			// });
 		},
 		deleteThisTask() {
-			TasksCollection.remove(this.task._id);
+			
+			Meteor.call('tasks.remove',this.task._id)
+			// TasksCollection.remove(this.task._id);
 		},
 	},
 };

@@ -7,7 +7,7 @@
 
 <script>
 import { Meteor } from "meteor/meteor";
-import { TasksCollection } from '../../api/TasksCollection'
+// import { TasksCollection } from '../../db/TasksCollection'
 
 export default {
 	data() {
@@ -17,11 +17,12 @@ export default {
 		handleSubmit(event) {
 			if(this.newTask.length === 0 ){return;}
 			const user = Meteor.user()
-			TasksCollection.insert({
-				text:this.newTask,
-				createdAt:new Date(),
-				userId:user._id
-			})
+			Meteor.call('tasks.insert',this.newTask.trim())
+			// TasksCollection.insert({
+			// 	text:this.newTask,
+			// 	createdAt:new Date(),
+			// 	userId:user._id
+			// })
 			this.newTask=''
         },
 	},

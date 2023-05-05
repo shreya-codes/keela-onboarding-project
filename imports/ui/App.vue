@@ -3,12 +3,15 @@
 		<header>
 			<div class="app-bar">
 				<div class="app-header">
-					<h1>To Do List</h1>
+					<h1>            📝️To Do List</h1>
 				</div>
 			</div>
 		</header>
 		<div class="main">
 			<template v-if="currentUser">
+				<div class="user" v-on:click="logout">
+        {{currentUser.username}} 🚪
+      </div>
 				<TaskForm />
 				<div class="filter">
 					<button @click="toggleHideCompleted">
@@ -16,6 +19,7 @@
 						<span v-else>Hide Completed Tasks</span>
 					</button>
 				</div>
+				<div class="loading" v-if="!$subReady.tasks">Loading ......</div>
 				<ul class="tasks">
 					<Task
 						class="task"
@@ -34,7 +38,7 @@
 import Vue from 'vue';
 import { Meteor } from "meteor/meteor";
 import Task from './components/Task.vue';
-import { TasksCollection } from '../api/TasksCollection';
+import { TasksCollection } from '../db/TasksCollection';
 import TaskForm from './components/TaskForm.vue';
 import LoginForm from './components/LoginForm.vue';
 
@@ -53,16 +57,22 @@ export default{
 		toggleHideCompleted() {
 			this.hideCompleted = !this.hideCompleted;
 		},
+		logout() {
+            Meteor.logout();
+          }
 	},
 meteor:{
+	$subscribe:{
+		'tasks':[]
+	},
 	currentUser() {
 		console.log(Meteor.user())
 			return Meteor.user();
 		},
+		
 },
 	computed: {
 		tasks() {
-			console.log('-----')
 			if(!this.currentUser){
 				return [];
 
@@ -81,7 +91,7 @@ meteor:{
 		},
 		incompleteCount() {
 			return TasksCollection.find({ isChecked: { $ne: true } ,userId:this.currentUser._id});
-		},
+		}, 
 		
 	},
 };
