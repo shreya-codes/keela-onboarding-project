@@ -1,36 +1,60 @@
 import { Meteor } from "meteor/meteor";
 import { Accounts } from "meteor/accounts-base";
-import { TasksCollection } from "../imports/db/TasksCollection";
-import "../imports/db/TasksCollection";
-import "../imports/api/tasksPublications";
-const insertTask = (taskText, user) => {
-  TasksCollection.insert({
-    text: taskText,
-    userId: user._id,
-    createdAt: new Date(),
-  });
+//collection
+import { OrganizationsCollection } from "../imports/db/OrganizationsCollection.js";
+import { TagCollection } from "../imports/db/TagCollection.js";
+import { UsersCollection } from "../imports/db/UsersCollection.js";
+//methods
+import tagMethods from "../imports/api/TagMethods.js";
+import organizationMethods from "../imports/api/organizationMethods.js";
+import userMethods from "../imports/api/userMethods.js";
+import contactMethods from "../imports/api/contactMethods.js";
+//publications
+import "../imports/publications/organizationsPublication.js";
+import "../imports/publications/contactsPublications.js";
+import "../imports/publications/tagsPublication.js";
+import "../imports/publications/usersPublications.js";
+//constants
+import { roles } from "../imports/constants/index.js";
+const KEEELAADMINUSERNAME = "keelaAdmin";
+const ADMINUSERNAME = "admin";
+const CORDINATORUSERNAME = "cordinator";
+const PASSWORD = "password";
+
+const insertOrg = (orgName) => {
+  OrganizationsCollection.insert({ name: orgName });
 };
-
-const SEED_USERNAME = "meteorite";
-const SEED_PASSWORD = "password";
-
-Meteor.startup(() => {
-  if (!Accounts.findUserByUsername(SEED_USERNAME)) {
+Meteor.startup(async () => {
+  if (OrganizationsCollection.find().count() === 0) {
+    ["keela", "nepal"].forEach(insertOrg);
+  }
+  if (!Accounts.findUserByUsername(KEEELAADMINUSERNAME)) {
     Accounts.createUser({
-      username: SEED_USERNAME,
-      password: SEED_PASSWORD,
+      username: KEEELAADMINUSERNAME,
+      password: PASSWORD,
+      profile: {
+        role: roles.keelaAdmin,
+      },
     });
   }
-  const user = Accounts.findUserByUsername(SEED_USERNAME);
-  if (TasksCollection.find().count() === 0) {
-    [
-      "First Task",
-      "Second Task",
-      "Third Task",
-      "Fourth Task",
-      "Fifth Task",
-      "Sixth Task",
-      "Seventh Task",
-    ].forEach((taskText) => insertTask(taskText, user));
+
+  if (!Accounts.findUserByUsername(ADMINUSERNAME)) {
+    Accounts.createUser({
+      username: ADMINUSERNAME,
+      password: PASSWORD,
+      profile: {
+        role: roles.admin,
+      },
+    });
+  }
+
+  if (!Accounts.findUserByUsername(CORDINATORUSERNAME)) {
+    Accounts.createUser({
+      username: CORDINATORUSERNAME,
+      password: PASSWORD,
+      profile: {
+        role: roles.coordinator,
+      },
+    });
   }
 });

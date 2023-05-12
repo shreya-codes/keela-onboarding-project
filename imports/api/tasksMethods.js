@@ -16,14 +16,12 @@ Meteor.methods({
 
   "tasks.remove"(taskId) {
     check(taskId, String);
-    console.log("here in hte ================ ", taskId);
     if (!this.userId) {
       throw new Meteor.Error("Not authorized.");
     }
     TasksCollection.remove(taskId);
 
     TasksCollection.remove(taskId);
-    console.log("removed");
   },
 
   "tasks.setIsChecked"(taskId, isChecked) {
