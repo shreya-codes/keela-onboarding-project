@@ -22,4 +22,11 @@ Meteor.methods({
       $set: { ...contact },
     });
   },
+  "contactTag.remove"(contactId, filteredTag) {
+    ContactsCollection.update(contactId, {
+      $set: {
+        tags: filteredTag,
+      },
+    });
+  },
 });

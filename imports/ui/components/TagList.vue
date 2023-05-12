@@ -1,10 +1,14 @@
 <template>
-  --------------{{ tag }}
-  <div v-if="!enableEdit">
+  <div v-if="!enableEdit && tag.length !== 0">
     <li>
       <span>{{ tag.tagName }}</span>
-      <button class="edit" @click="editTag">edit</button>
-      <button class="delete" @click="deleteTag">delete</button>
+      <div v-if="isContactTag">
+        <button class="delete" @click="removeContactTag">remove</button>
+      </div>
+      <div v-else-if="!!isContactTag">
+        <button class="edit" @click="editTag">edit</button>
+        <button class="delete" @click="deleteTag">delete</button>
+      </div>
     </li>
   </div>
   <div v-else>
@@ -32,7 +36,7 @@
 <script>
 import { Meteor } from "meteor/meteor";
 export default {
-  props: ["tag"],
+  props: ["tag", "isContactTag", "contact"],
   data() {
     return { enableEdit: false, tagName: this.tag.tagName };
   },
@@ -49,6 +53,14 @@ export default {
         _id: this.tag._id,
         tagName: this.tagName,
       });
+    },
+    removeContactTag() {
+      console.log(this.contact.tags, "---------");
+
+      const filteredTag = this.contact.tags.filter(
+        (tag) => tag._id !== this.tag._id
+      );
+      Meteor.call("contactTag.remove", this.contact._id, filteredTag);
     },
   },
 };

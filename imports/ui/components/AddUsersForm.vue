@@ -54,7 +54,6 @@ export default {
   props: ["orgs"],
   data() {
     return {
-      orgs: this.orgs,
       selectedOrg: {},
       roles: roles,
       selectedRole: "",

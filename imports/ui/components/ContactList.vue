@@ -9,12 +9,15 @@
         Phone:<span>{{ contact.phone }}</span>
       </p>
       <p>
-        tags:<span v-for="tag in contact.tags"> </span>
-        <TagList
+        tags:
+        <tag-list
           v-for="tag in contact.tags"
           v-bind:key="tag._id"
           v-bind:tag="tag"
-        />
+          v-bind:isContactTag="true"
+          v-bind:contact="contact"
+          >{{ tag }}
+        </tag-list>
       </p>
       <button class="edit" @click="editContact">edit</button>
       <button class="delete" @click="deleteContact">delete</button>
@@ -67,6 +70,23 @@
         />
       </div>
       <div>
+        <label>Select tags:</label>
+        <Multiselect
+          v-model="selectedTags"
+          label="tagName"
+          track-by="tagName"
+          :taggable="true"
+          :options="tags"
+          :multiple="true"
+          :close-on-select="false"
+          placeholder="Select Tags"
+        >
+          <template v-slot:option="{ option }">
+            {{ option.tagName }}
+          </template>
+        </Multiselect>
+      </div>
+      <div>
         <button type="submit">Update Contact</button>
       </div>
     </form>
@@ -74,10 +94,12 @@
 </template>
 
 <script>
+import Multiselect from "vue-multiselect";
 import TagList from "./TagList.vue";
+
 export default {
-  props: ["contact"],
-  components: { TagList },
+  props: ["contact", "tags"],
+  components: { TagList, Multiselect },
   data() {
     return {
       enableEdit: false,
@@ -85,6 +107,7 @@ export default {
       lastName: this.contact.lastName,
       phone: this.contact.phone,
       email: this.contact.email,
+      selectedTags: this.contact.tags,
     };
   },
   methods: {

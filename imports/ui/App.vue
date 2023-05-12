@@ -1,12 +1,5 @@
 <template>
   <div class="app">
-    <header>
-      <div class="app-bar">
-        <div class="app-header">
-          <h1></h1>
-        </div>
-      </div>
-    </header>
     <div class="main">
       <template v-if="currentUser">
         <div class="user" v-on:click="logout">
@@ -45,7 +38,6 @@
           />
         </div>
         <div>
-          ========apple==============
           <AddContactForm v-bind:tags="tags" />
         </div>
         <div>
@@ -53,6 +45,7 @@
             v-for="contact in contacts"
             v-bind:key="contact._id"
             v-bind:contact="contact"
+            v-bind:tags="tags"
           />
         </div>
       </template>
@@ -63,16 +56,17 @@
 
 <script>
 import { Meteor } from "meteor/meteor";
-import LoginForm from "./components/LoginForm.vue";
-import AddOrgForm from "./components/AddOrgForm.vue";
-import AddTagForm from "./components/AddTagForm.vue";
-import AddUsersForm from "./components/AddUsersForm.vue";
-import AddContactForm from "./components/AddContactForm.vue";
-
-import ContactList from "./components/ContactList.vue";
-import OrganizationList from "./components/OrganizationList.vue";
-import TagList from "./components/TagList.vue";
-import UsersList from "./components/UsersList.vue";
+import {
+  LoginForm,
+  AddOrgForm,
+  AddTagForm,
+  AddUsersForm,
+  AddContactForm,
+  ContactList,
+  OrganizationList,
+  TagList,
+  UsersList,
+} from "./components";
 
 import { OrganizationsCollection } from "../db/OrganizationsCollection";
 import { TagCollection } from "../db/TagCollection";

@@ -49,13 +49,18 @@
       <label>Select tags:</label>
       <MultiSelect
         v-model="selectedTags"
+        label="tagName"
+        track-by="tagName"
+        :taggable="true"
         :options="tags"
         :multiple="true"
         :close-on-select="false"
         placeholder="Select Tags"
       >
-        {{ tags.name }}</MultiSelect
-      >
+        <template v-slot:option="{ option }">
+          {{ option.tagName }}
+        </template>
+      </MultiSelect>
     </div>
     <div>
       <button type="submit">Add Contact</button>
@@ -83,6 +88,10 @@ export default {
     };
   },
   methods: {
+    onTagSelect(tag) {
+      this.selectedTags.push(tag);
+      console.log(this.selectedTags);
+    },
     addContact(event) {
       console.log(this.selectedTags, "------------ selected tags");
       Meteor.call("contact.insert", {
@@ -100,6 +109,14 @@ export default {
     addTag(event) {
       this.contactTags = this.contactTags.push(this.tag.name);
       console.log(this.contactTags);
+    },
+  },
+  computed: {
+    filteredTags() {
+      console.log(this.selectedTags, "selected tags");
+      // return this.tags.filter(tag=>{
+      //   tag._id !== this.selectedTags
+      // })
     },
   },
 };
