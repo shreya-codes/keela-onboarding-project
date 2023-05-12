@@ -1,4 +1,4 @@
-import Vue from 'vue'
-import VueMeteorTracker from 'vue-meteor-tracker'
+import Vue from "vue";
+import VueMeteorTracker from "vue-meteor-tracker";
 
-Vue.use(VueMeteorTracker)
+Vue.use(VueMeteorTracker);
