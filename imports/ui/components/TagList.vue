@@ -55,8 +55,6 @@ export default {
       });
     },
     removeContactTag() {
-      console.log(this.contact.tags, "---------");
-
       const filteredTag = this.contact.tags.filter(
         (tag) => tag._id !== this.tag._id
       );

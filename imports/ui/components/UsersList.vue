@@ -57,7 +57,7 @@
 </template>
 
 <script>
-import { roles } from "../../constants";
+import { roles } from "../../constants/roles";
 export default {
   props: ["user", "orgs"],
   data() {

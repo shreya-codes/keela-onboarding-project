@@ -30,16 +30,27 @@
 import { Meteor } from "meteor/meteor";
 
 export default {
-  name: "LoginForm",
+  name: "AddOrgForm",
   data() {
     return { orgName: "", email: "" };
   },
   methods: {
     addOrg(event) {
-      Meteor.call("organizations.create", {
-        name: this.orgName,
-        email: this.email,
-      });
+      Meteor.call(
+        "organizations.create",
+        {
+          name: this.orgName,
+          email: this.email,
+        },
+        (error, result) => {
+          if (error) {
+            // Handle error
+            console.error(error);
+          } else {
+            this.$emit("orgAdded", result); // Emit the event with the organization ID
+          }
+        }
+      );
       this.orgName = "";
       this.email = "";
     },

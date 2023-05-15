@@ -8,6 +8,7 @@ Meteor.methods({
       tagName: tag,
       createdAt: new Date(),
       createdBy: this.userId,
+      // orgId:this.orgId
     });
   },
   "tag.remove"(tagId) {

@@ -5,17 +5,19 @@ import { OrganizationsCollection } from "../imports/db/OrganizationsCollection.j
 import { TagCollection } from "../imports/db/TagCollection.js";
 import { UsersCollection } from "../imports/db/UsersCollection.js";
 //methods
-import tagMethods from "../imports/api/TagMethods.js";
-import organizationMethods from "../imports/api/organizationMethods.js";
-import userMethods from "../imports/api/userMethods.js";
-import contactMethods from "../imports/api/contactMethods.js";
+import {
+  contactMethods,
+  organizationMethods,
+  TagsMethodtas,
+  userMethods,
+} from "../imports/api/index.js";
 //publications
 import "../imports/publications/organizationsPublication.js";
 import "../imports/publications/contactsPublications.js";
 import "../imports/publications/tagsPublication.js";
 import "../imports/publications/usersPublications.js";
 //constants
-import { roles } from "../imports/constants/index.js";
+import { roles } from "../imports/constants/roles.js";
 const KEEELAADMINUSERNAME = "keelaAdmin";
 const ADMINUSERNAME = "admin";
 const CORDINATORUSERNAME = "cordinator";
@@ -25,6 +27,7 @@ const insertOrg = (orgName) => {
   OrganizationsCollection.insert({ name: orgName });
 };
 Meteor.startup(async () => {
+  console.log(OrganizationsCollection.find().count(), "count");
   if (OrganizationsCollection.find().count() === 0) {
     ["keela", "nepal"].forEach(insertOrg);
   }

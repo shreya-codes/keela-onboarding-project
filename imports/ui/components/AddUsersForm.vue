@@ -48,7 +48,7 @@
 
 <script>
 import { Meteor } from "meteor/meteor";
-import { roles } from "../../constants/index";
+import { roles } from "../../constants/roles";
 export default {
   name: "AddForm",
   props: ["orgs"],

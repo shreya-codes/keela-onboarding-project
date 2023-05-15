@@ -8,6 +8,7 @@ import LoginForm from "../components/LoginForm.vue";
 import OrganizationList from "../components/OrganizationList.vue";
 import TagList from "../components/TagList.vue";
 import UsersList from "../components/UsersList.vue";
+import Organization from "../components/Organization.vue";
 
 export {
   AddContactForm,
@@ -20,4 +21,5 @@ export {
   TagList,
   UsersList,
   AddUsersForm,
+  Organization,
 };

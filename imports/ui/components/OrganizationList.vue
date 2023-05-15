@@ -48,20 +48,47 @@ export default {
       email: this.org.email,
     };
   },
+  meteor: {
+    $subscribe: {
+      organizations: [],
+    },
+    organizations() {
+      return OrganizationsCollection.find().fetch();
+    },
+  },
   methods: {
     editOrg() {
       this.enableEdit = !this.enableEdit;
     },
     deleteOrg() {
-      Meteor.call("organizations.remove", this.org._id);
+      Meteor.call("organizations.remove", this.org._id, (error, result) => {
+        if (error) {
+          // Handle error
+          console.error(error);
+        } else {
+          console.log("here");
+          this.$emit("orgUpdate", result); // Emit the event with the organization ID
+        }
+      });
     },
     updateOrg(event) {
       this.enableEdit = !this.enableEdit;
-      Meteor.call("organizations.edit", {
-        _id: this.org._id,
-        name: this.orgName,
-        email: this.email,
-      });
+      Meteor.call(
+        "organizations.edit",
+        {
+          _id: this.org._id,
+          name: this.orgName,
+          email: this.email,
+        },
+        (error, result) => {
+          if (error) {
+            // Handle error
+            console.error(error);
+          } else {
+            this.$emit("orgUpdate", result); // Emit the event with the organization ID
+          }
+        }
+      );
     },
   },
 };
