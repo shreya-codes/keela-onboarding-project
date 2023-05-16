@@ -28,17 +28,7 @@
 
 <script>
 import { Meteor } from "meteor/meteor";
-import {
-  LoginForm,
-  AddOrgForm,
-  AddTagForm,
-  AddUsersForm,
-  AddContactForm,
-  ContactList,
-  OrganizationList,
-  TagList,
-  UsersList,
-} from "./components/index";
+import { LoginForm } from "./components/index";
 
 import { checkUserRole } from "../middleware/checkUserRole";
 import { permission } from "../constants/permission";
@@ -46,23 +36,12 @@ import { permission } from "../constants/permission";
 import { OrganizationsCollection } from "../db/OrganizationsCollection";
 import { TagCollection } from "../db/TagCollection";
 import { ContactsCollection } from "../db/ContactsCollection";
-import { roles } from "../constants/roles";
 export default {
   components: {
     LoginForm,
-    OrganizationList,
-    AddOrgForm,
-    AddTagForm,
-    AddUsersForm,
-    TagList,
-    ContactList,
-    AddContactForm,
-    UsersList,
   },
   data() {
-    return {
-      roles: roles,
-    };
+    return {};
   },
   methods: {
     logout() {
