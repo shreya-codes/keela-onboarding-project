@@ -1,0 +1,17 @@
+import { onRenderTriggered } from "vue"
+
+//Login credentials
+for keelaAdmin
+username:'keelaAdmin'
+for cordinator
+username:'cordinator'
+for orgAdmin
+username: 'admin'
+
+password:'password for all'
+
+//For running locally
+Clone this repo
+Run meteor npm install
+Run meteor
+Open http://localhost:3000 in your browser

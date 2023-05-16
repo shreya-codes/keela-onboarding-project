@@ -1,21 +1,28 @@
 <template>
   <div>
-    <div>
-      <router-link to="/orgs"> Organization </router-link>
-    </div>
-    <div>
-      <router-link to="/addOrg"> Add Organization </router-link>
-    </div>
-    <div>
-      <router-link to="/addTag"> Add Tag </router-link>
-    </div>
-    <div>
-      <router-link to="/addUser"> Add User </router-link>
-    </div>
-    <div>
-      <router-link to="/addContact"> Add Organization </router-link>
-    </div>
-    <router-view></router-view>
+    <template v-if="currentUser">
+      <div class="user" v-on:click="logout">
+        {{ currentUser.username }}
+      </div>
+      <div>
+        <div v-if="orgCreateAccess || orgViewAccess">
+          <router-link to="/orgs"> Organization </router-link>
+        </div>
+        <div v-if="userCreateAccess || userViewAccess">
+          <router-link to="/user"> Users </router-link>
+        </div>
+        <div v-if="contactCreateAccess || contactViewAccess">
+          <router-link to="/contact"> Contacts </router-link>
+        </div>
+        <div v-if="tagCreateAccess || tagViewAccess">
+          <router-link to="/tags">Tags</router-link>
+        </div>
+        <router-view></router-view>
+      </div>
+    </template>
+    <template v-else>
+      <LoginForm />
+    </template>
   </div>
 </template>
 
@@ -32,6 +39,9 @@ import {
   TagList,
   UsersList,
 } from "./components/index";
+
+import { checkUserRole } from "../middleware/checkUserRole";
+import { permission } from "../constants/permission";
 
 import { OrganizationsCollection } from "../db/OrganizationsCollection";
 import { TagCollection } from "../db/TagCollection";
@@ -72,12 +82,59 @@ export default {
     },
   },
   computed: {
+    orgCreateAccess() {
+      return (
+        this.currentUser &&
+        checkUserRole(permission.ORG_CREATE_PERMISSION, this.currentUser)
+      );
+    },
+    orgViewAccess() {
+      return (
+        this.currentUser &&
+        checkUserRole(permission.ORG_VIEW_PERMISSION, this.currentUser)
+      );
+    },
+    tagCreateAccess() {
+      return (
+        this.currentUser &&
+        checkUserRole(permission.TAG_CREATE_PERMISSION, this.currentUser)
+      );
+    },
+    tagViewAccess() {
+      return (
+        this.currentUser &&
+        checkUserRole(permission.TAG_VIEW_PERMISSION, this.currentUser)
+      );
+    },
+    contactCreateAccess() {
+      return (
+        this.currentUser &&
+        checkUserRole(permission.CONTACT_CREATE_PERMISSION, this.currentUser)
+      );
+    },
+    contactViewAccess() {
+      return (
+        this.currentUser &&
+        checkUserRole(permission.CONTACT_VIEW_PERMISSION, this.currentUser)
+      );
+    },
+    userCreateAccess() {
+      return (
+        this.currentUser &&
+        checkUserRole(permission.USER_CREATE_PERMISSION, this.currentUser)
+      );
+    },
+    userViewAccess() {
+      return (
+        this.currentUser &&
+        checkUserRole(permission.USER_VIEW_PERMISSION, this.currentUser)
+      );
+    },
     organizations() {
       if (!this.currentUser) {
         return [];
       }
       const orgs = OrganizationsCollection.find({}).fetch();
-      console.log(orgs, "======= orgs");
       return orgs;
     },
     allUsers() {
@@ -85,7 +142,6 @@ export default {
         return [];
       }
       const allUsers = Meteor.users.find({}).fetch();
-      console.log(allUsers, "============ all users ");
       return allUsers;
     },
     tags() {

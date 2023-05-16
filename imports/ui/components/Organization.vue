@@ -2,19 +2,16 @@
   <div class="app">
     <div class="main">
       <template v-if="currentUser">
-        <div class="user" v-on:click="logout">
-          {{ currentUser.username }} 🚪
-        </div>
-        {{ orgList }}
         <div class="loading" v-if="!$subReady.organizations">
           Loading ......
         </div>
-        <div v-if="currentUser.profile.role === roles.keelaAdmin">
+        <div v-if="createAccess">
           <div>
-            <AddOrgForm @orgUpdate="handleOrgAdded" />
+            <AddOrgForm @orgUpdate="handleOrgUpdate" />
           </div>
-          <div>
+          <div v-if="viewAccess">
             <OrganizationList
+              @orgUpdate="handleOrgUpdate"
               v-for="org in organizations"
               v-bind:key="org._id"
               v-bind:org="org"
@@ -33,6 +30,8 @@ import { LoginForm, AddOrgForm, OrganizationList } from "../components/index";
 
 import { OrganizationsCollection } from "../../db/OrganizationsCollection";
 import { roles } from "../../constants/roles";
+import { checkUserRole } from "../../middleware/checkUserRole";
+import { permission } from "../../constants/permission";
 export default {
   components: {
     OrganizationList,
@@ -43,14 +42,15 @@ export default {
     return {
       roles: roles,
       orgList: [],
+      viewAccess: checkUserRole(permission.ORG_VIEW_PERMISSION),
+      createAccess: checkUserRole(permission.ORG_CREATE_PERMISSION),
     };
   },
   methods: {
     logout() {
       Meteor.logout();
     },
-    handleOrgAdded(orgId) {
-      console.log("here");
+    handleOrgUpdate() {
       const org = OrganizationsCollection.find().fetch();
       if (org) {
         this.orgList = org;

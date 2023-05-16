@@ -3,6 +3,9 @@
     <div>
       <li>
         <span>{{ org.name }}</span>
+        <div>
+          Email:<span>{{ org.email }}</span>
+        </div>
         <button class="edit" @click="editOrg">edit</button>
         <button class="delete" @click="deleteOrg">delete</button>
       </li>
@@ -63,11 +66,9 @@ export default {
     deleteOrg() {
       Meteor.call("organizations.remove", this.org._id, (error, result) => {
         if (error) {
-          // Handle error
           console.error(error);
         } else {
-          console.log("here");
-          this.$emit("orgUpdate", result); // Emit the event with the organization ID
+          this.$emit("orgUpdate", result);
         }
       });
     },

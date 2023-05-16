@@ -1,7 +1,6 @@
 <template>
   <form class="contact-form" @submit.prevent="addContact">
     <div>
-      {{ contactTags }}
       <label for="firstName">First Name</label>
       <input
         id="firstName"
@@ -10,7 +9,9 @@
         placeholder="First Name"
         required
         v-model="firstName"
+        @input="validateField('name', $event.target.value)"
       />
+      <div v-if="errors && errors.name" class="error">{{ errors.name }}</div>
     </div>
     <div>
       <label for="lastName">Last Name</label>
@@ -21,7 +22,9 @@
         placeholder="Last Name"
         required
         v-model="lastName"
+        @input="validateField('name', $event.target.value)"
       />
+      <div v-if="errors && errors.name" class="error">{{ errors.name }}</div>
     </div>
     <div>
       <label for="email">Email</label>
@@ -32,7 +35,9 @@
         placeholder="Email"
         required
         v-model="email"
+        @input="validateField('email', $event.target.value)"
       />
+      <div v-if="errors && errors.email" class="error">{{ errors.email }}</div>
     </div>
     <div>
       <label for="phone">Phone</label>
@@ -43,7 +48,9 @@
         placeholder="phone"
         required
         v-model="phone"
+        @input="validateField('phone', $event.target.value)"
       />
+      <div v-if="errors && errors.phone" class="error">{{ errors.phone }}</div>
     </div>
     <div>
       <label>Select tags:</label>
@@ -71,9 +78,11 @@
 <script>
 import { Meteor } from "meteor/meteor";
 import MultiSelect from "vue-multiselect";
+import { TagCollection } from "../../db/TagCollection";
+import { validate } from "../../middleware/validation";
+
 export default {
   name: "AddContactForm",
-  props: ["tags"],
   components: {
     MultiSelect,
   },
@@ -84,39 +93,57 @@ export default {
       phone: "",
       email: "",
       selectedTags: [],
-      contactTags: [],
+      currentUser: Meteor.user(),
+      error: {},
     };
   },
+  meteor: {
+    $subscribe: {
+      tags: [],
+    },
+  },
   methods: {
+    validateField(fieldName, field) {
+      this.errors = {};
+      this.errors = validate(fieldName, field);
+    },
     onTagSelect(tag) {
       this.selectedTags.push(tag);
-      console.log(this.selectedTags);
     },
-    addContact(event) {
-      console.log(this.selectedTags, "------------ selected tags");
-      Meteor.call("contact.insert", {
-        firstName: this.firstName || "",
-        lastName: this.lastName || "",
-        phone: this.phone || "",
-        email: this.email || "",
-        tags: this.selectedTags,
-      });
+    addContact() {
+      Meteor.call(
+        "contact.create",
+        {
+          firstName: this.firstName || "",
+          lastName: this.lastName || "",
+          phone: this.phone || "",
+          email: this.email || "",
+          tags: this.selectedTags,
+          orgId: this.currentUser.profile.orgId,
+        },
+        (error, result) => {
+          if (error) {
+            // Handle error
+            console.error(error);
+          } else {
+            this.$emit("contactUpdate", result); // Emit the event with the organization ID
+          }
+        }
+      );
       (this.firstName = ""),
         (this.lastName = ""),
         (this.phone = ""),
         (this.email = "");
     },
-    addTag(event) {
-      this.contactTags = this.contactTags.push(this.tag.name);
-      console.log(this.contactTags);
-    },
   },
   computed: {
-    filteredTags() {
-      console.log(this.selectedTags, "selected tags");
-      // return this.tags.filter(tag=>{
-      //   tag._id !== this.selectedTags
-      // })
+    tags() {
+      if (!this.currentUser) {
+        return [];
+      }
+
+      const tags = TagCollection.find({}).fetch();
+      return tags;
     },
   },
 };
