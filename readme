@@ -7,7 +7,7 @@ username:'cordinator'
 for orgAdmin
 username: 'admin'
 
-password:'password for all'
+password:'password' // for all above user
 
 //For running locally
 Clone this repo
