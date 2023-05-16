@@ -1,12 +1,17 @@
-import Vue from 'vue';
-import { VueMeteor } from 'vue-meteor-tracker';
-import '../imports/ui/plugins';
+import Vue from "vue";
+import { VueMeteor } from "vue-meteor-tracker";
 
-import App from '../imports/ui/App.vue';
-Vue.use(VueMeteor);
+import Router from "vue-router";
+import "../imports/ui/plugins";
+
+import App from "../imports/ui/App.vue";
+import router from "../client/router/index.js";
+
+Vue.use(Router);
 Meteor.startup(() => {
-	new Vue({
-		el: '#app',
-		...App,
-	});
+  Vue.use(VueMeteor);
+  new Vue({
+    router,
+    render: (h) => h(App),
+  }).$mount("#app");
 });

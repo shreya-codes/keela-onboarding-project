@@ -8,11 +8,18 @@
       <p>
         Organization:
         <span>{{
-          (user.profile && user.profile.org && user.profile.org.orgName) || ""
+          (user.profile && user.profile.orgName) ||
+          (user.profile && user.profile.orgId)
         }}</span>
       </p>
-      <button class="edit" @click="editUser">edit</button>
-      <button class="delete" @click="deleteUser">delete</button>
+      <button v-if="editAccess" class="edit" @click="editUser">edit</button>
+      <button
+        class="delete"
+        v-if="removeAccess && currentUser._id !== user._id"
+        @click="deleteUser"
+      >
+        delete
+      </button>
     </li>
   </div>
   <div v-else>
@@ -42,14 +49,6 @@
       </div>
 
       <div>
-        <select v-model="selectedOrg">
-          <option value="">Select an Org</option>
-          <option v-for="org in orgs" v-bind:value="org" v-bind:key="org._id">
-            {{ org.name }}
-          </option>
-        </select>
-      </div>
-      <div>
         <button type="submit">Update User</button>
       </div>
     </form>
@@ -57,44 +56,66 @@
 </template>
 
 <script>
-import { roles } from "../../constants";
+import { roles } from "../../constants/roles";
+import { checkUserRole } from "../../middleware/checkUserRole";
+import { permission } from "../../constants/permission";
 export default {
   props: ["user", "orgs"],
   data() {
     return {
+      removeAccess: checkUserRole(permission.TAG_REMOVE_PERMISSION),
+      editAccess: checkUserRole(permission.TAG_EDIT_PERMISSION),
+
       enableEdit: false,
       name: this.user.username,
       password: this.user.password,
-      selectedOrg: this.user.org ? this.user.org : {},
       roles: roles,
       selectedRole: this.user.profile ? this.user.profile.role : "",
+      currentUser: Meteor.user(),
     };
   },
-
   methods: {
     editUser() {
       this.enableEdit = !this.enableEdit;
     },
     deleteUser() {
-      Meteor.call("users.remove", this.org._id);
+      Meteor.call("users.remove", this.user._id, (error, result) => {
+        if (error) {
+          // Handle error
+          console.error(error);
+        } else {
+          this.$emit("userUpdate", result); // Emit the event with the organization ID
+        }
+      });
     },
-    updateUser(event) {
-      console.log(this, "--- this ");
+    updateUser() {
       this.enableEdit = !this.enableEdit;
       let user = {
         _id: this.user._id,
         profile: {
           role: this.selectedRole,
-          org: {
-            orgId: this.selectedOrg._id,
-            orgName: this.selectedOrg.name,
-          },
         },
       };
       if (this.name !== this.user.username) {
         user.username = this.name;
       }
-      Meteor.call("users.edit", user);
+      Meteor.call("users.edit", user, (error, result) => {
+        if (error) {
+          // Handle error
+          console.error(error);
+        } else {
+          this.$emit("userUpdate", result); // Emit the event with the organization ID
+        }
+      });
+    },
+  },
+  computed: {
+    organizations() {
+      if (!this.currentUser) {
+        return [];
+      }
+      const orgs = OrganizationsCollection.find({}).fetch();
+      return orgs;
     },
   },
 };

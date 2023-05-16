@@ -1,83 +1,52 @@
 <template>
-  <div class="app">
-    <header>
-      <div class="app-bar">
-        <div class="app-header">
-          <h1></h1>
-        </div>
+  <div>
+    <template v-if="currentUser">
+      <div class="user" v-on:click="logout">
+        {{ currentUser.username }}
       </div>
-    </header>
-    <div class="main">
-      <template v-if="currentUser">
-        <div class="user" v-on:click="logout">
-          {{ currentUser.username }} 🚪
+      <div>
+        <div v-if="orgCreateAccess || orgViewAccess">
+          <router-link to="/orgs"> Organization </router-link>
         </div>
-        <div class="loading" v-if="!$subReady.organizations">
-          Loading ......
+        <div v-if="userCreateAccess || userViewAccess">
+          <router-link to="/user"> Users </router-link>
         </div>
-        <div v-if="currentUser.profile.role === roles.keelaAdmin">
-          <div>
-            <AddOrgForm />
-          </div>
-          <div>
-            <OrganizationList
-              v-for="org in organizations"
-              v-bind:key="org._id"
-              v-bind:org="org"
-            />
-          </div>
+        <div v-if="contactCreateAccess || contactViewAccess">
+          <router-link to="/contact"> Contacts </router-link>
         </div>
-
-        <div>
-          <AddTagForm />
+        <div v-if="tagCreateAccess || tagViewAccess">
+          <router-link to="/tags">Tags</router-link>
         </div>
-
-        <div>
-          <TagList v-for="tag in tags" v-bind:key="tag._id" v-bind:tag="tag" />
-        </div>
-        <div><AddUsersForm v-bind:orgs="organizations" /></div>
-        <div>
-          <UsersList
-            v-for="user in allUsers"
-            v-bind:key="user._id"
-            v-bind:user="user"
-            v-bind:orgs="organizations"
-          />
-        </div>
-        <div>
-          ========apple==============
-          <AddContactForm v-bind:tags="tags" />
-        </div>
-        <div>
-          <ContactList
-            v-for="contact in contacts"
-            v-bind:key="contact._id"
-            v-bind:contact="contact"
-          />
-        </div>
-      </template>
-      <template v-else><LoginForm /></template>
-    </div>
+        <router-view></router-view>
+      </div>
+    </template>
+    <template v-else>
+      <LoginForm />
+    </template>
   </div>
 </template>
 
 <script>
 import { Meteor } from "meteor/meteor";
-import LoginForm from "./components/LoginForm.vue";
-import AddOrgForm from "./components/AddOrgForm.vue";
-import AddTagForm from "./components/AddTagForm.vue";
-import AddUsersForm from "./components/AddUsersForm.vue";
-import AddContactForm from "./components/AddContactForm.vue";
+import {
+  LoginForm,
+  AddOrgForm,
+  AddTagForm,
+  AddUsersForm,
+  AddContactForm,
+  ContactList,
+  OrganizationList,
+  TagList,
+  UsersList,
+} from "./components/index";
 
-import ContactList from "./components/ContactList.vue";
-import OrganizationList from "./components/OrganizationList.vue";
-import TagList from "./components/TagList.vue";
-import UsersList from "./components/UsersList.vue";
+import { checkUserRole } from "../middleware/checkUserRole";
+import { permission } from "../constants/permission";
 
 import { OrganizationsCollection } from "../db/OrganizationsCollection";
 import { TagCollection } from "../db/TagCollection";
 import { ContactsCollection } from "../db/ContactsCollection";
-import { roles } from "../constants";
+import { roles } from "../constants/roles";
 export default {
   components: {
     LoginForm,
@@ -113,12 +82,59 @@ export default {
     },
   },
   computed: {
+    orgCreateAccess() {
+      return (
+        this.currentUser &&
+        checkUserRole(permission.ORG_CREATE_PERMISSION, this.currentUser)
+      );
+    },
+    orgViewAccess() {
+      return (
+        this.currentUser &&
+        checkUserRole(permission.ORG_VIEW_PERMISSION, this.currentUser)
+      );
+    },
+    tagCreateAccess() {
+      return (
+        this.currentUser &&
+        checkUserRole(permission.TAG_CREATE_PERMISSION, this.currentUser)
+      );
+    },
+    tagViewAccess() {
+      return (
+        this.currentUser &&
+        checkUserRole(permission.TAG_VIEW_PERMISSION, this.currentUser)
+      );
+    },
+    contactCreateAccess() {
+      return (
+        this.currentUser &&
+        checkUserRole(permission.CONTACT_CREATE_PERMISSION, this.currentUser)
+      );
+    },
+    contactViewAccess() {
+      return (
+        this.currentUser &&
+        checkUserRole(permission.CONTACT_VIEW_PERMISSION, this.currentUser)
+      );
+    },
+    userCreateAccess() {
+      return (
+        this.currentUser &&
+        checkUserRole(permission.USER_CREATE_PERMISSION, this.currentUser)
+      );
+    },
+    userViewAccess() {
+      return (
+        this.currentUser &&
+        checkUserRole(permission.USER_VIEW_PERMISSION, this.currentUser)
+      );
+    },
     organizations() {
       if (!this.currentUser) {
         return [];
       }
       const orgs = OrganizationsCollection.find({}).fetch();
-      console.log(orgs, "======= orgs");
       return orgs;
     },
     allUsers() {
@@ -126,7 +142,6 @@ export default {
         return [];
       }
       const allUsers = Meteor.users.find({}).fetch();
-      console.log(allUsers, "============ all users ");
       return allUsers;
     },
     tags() {
@@ -148,8 +163,3 @@ export default {
   },
 };
 </script>
-<style>
-div {
-  padding: 10px;
-}
-</style>
