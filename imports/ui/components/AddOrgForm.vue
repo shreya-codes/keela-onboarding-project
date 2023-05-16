@@ -37,7 +37,7 @@ import { validate } from "../../middleware/validation";
 export default {
   name: "AddOrgForm",
   data() {
-    return { orgName: "", email: "", error: {} };
+    return { orgName: "", email: "", errors: {} };
   },
   methods: {
     validateField(fieldName, field) {

@@ -94,7 +94,7 @@ export default {
       email: "",
       selectedTags: [],
       currentUser: Meteor.user(),
-      error: {},
+      errors: {},
     };
   },
   meteor: {
