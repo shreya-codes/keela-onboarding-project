@@ -7,11 +7,10 @@
         </div>
         <div v-if="createAccess">
           <div>
-            <AddOrgForm @orgUpdate="handleOrgUpdate" />
+            <AddOrgForm />
           </div>
           <div v-if="viewAccess">
             <OrganizationList
-              @orgUpdate="handleOrgUpdate"
               v-for="org in organizations"
               v-bind:key="org._id"
               v-bind:org="org"
@@ -41,38 +40,27 @@ export default {
   data() {
     return {
       roles: roles,
-      orgList: [],
       viewAccess: checkUserRole(permission.ORG_VIEW_PERMISSION),
       createAccess: checkUserRole(permission.ORG_CREATE_PERMISSION),
+      currentUser: Meteor.user(),
     };
   },
   methods: {
     logout() {
       Meteor.logout();
     },
-    handleOrgUpdate() {
-      const org = OrganizationsCollection.find().fetch();
-      if (org) {
-        this.orgList = org;
-      }
-    },
   },
   meteor: {
     $subscribe: {
       organizations: [],
     },
-    currentUser() {
-      return Meteor.user();
-    },
-  },
-  computed: {
+
     organizations() {
-      if (!this.currentUser) {
+      if (!Meteor.user()) {
         return [];
       }
       const orgs = OrganizationsCollection.find().fetch();
-      this.orgList = orgs;
-      return this.orgList;
+      return orgs;
     },
   },
 };

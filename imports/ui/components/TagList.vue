@@ -50,6 +50,7 @@ export default {
       tagName: this.tag.tagName,
       removeAccess: checkUserRole(permission.TAG_REMOVE_PERMISSION),
       editAccess: checkUserRole(permission.TAG_EDIT_PERMISSION),
+      currentUser: Meteor.user(),
     };
   },
   methods: {
@@ -61,8 +62,6 @@ export default {
         if (error) {
           // Handle error
           console.error(error);
-        } else {
-          this.$emit("tagUpdate", result); // Emit the event with the organization ID
         }
       });
     },
@@ -78,8 +77,6 @@ export default {
           if (error) {
             // Handle error
             console.error(error);
-          } else {
-            this.$emit("tagUpdate", result); // Emit the event with the organization ID
           }
         }
       );

@@ -101,6 +101,14 @@ export default {
     $subscribe: {
       tags: [],
     },
+    tags() {
+      if (!Meteor.user()) {
+        return [];
+      }
+
+      const tags = TagCollection.find({}).fetch();
+      return tags;
+    },
   },
   methods: {
     validateField(fieldName, field) {
@@ -111,39 +119,18 @@ export default {
       this.selectedTags.push(tag);
     },
     addContact() {
-      Meteor.call(
-        "contact.create",
-        {
-          firstName: this.firstName || "",
-          lastName: this.lastName || "",
-          phone: this.phone || "",
-          email: this.email || "",
-          tags: this.selectedTags,
-          orgId: this.currentUser.profile.orgId,
-        },
-        (error, result) => {
-          if (error) {
-            // Handle error
-            console.error(error);
-          } else {
-            this.$emit("contactUpdate", result); // Emit the event with the organization ID
-          }
-        }
-      );
+      Meteor.call("contact.create", {
+        firstName: this.firstName || "",
+        lastName: this.lastName || "",
+        phone: this.phone || "",
+        email: this.email || "",
+        tags: this.selectedTags,
+        orgId: this.currentUser.profile.orgId,
+      });
       (this.firstName = ""),
         (this.lastName = ""),
         (this.phone = ""),
         (this.email = "");
-    },
-  },
-  computed: {
-    tags() {
-      if (!this.currentUser) {
-        return [];
-      }
-
-      const tags = TagCollection.find({}).fetch();
-      return tags;
     },
   },
 };

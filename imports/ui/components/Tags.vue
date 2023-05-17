@@ -4,10 +4,9 @@
       <template v-if="currentUser">
         <div class="loading" v-if="!$subReady.tags">Loading ......</div>
         <div v-if="createAccess">
-          <div><AddTagForm @tagUpdate="handleTagUpdate" /></div>
+          <div><AddTagForm /></div>
           <div>
             <TagList
-              @tagUpdate="handleTagUpdate"
               v-if="viewAccess"
               v-for="tag in tags"
               v-bind:key="tag._id"
@@ -38,36 +37,22 @@ export default {
   data() {
     return {
       roles: roles,
-      tagList: [],
       viewAccess: checkUserRole(permission.TAG_VIEW_PERMISSION),
       createAccess: checkUserRole(permission.TAG_CREATE_PERMISSION),
+      currentUser: Meteor.user(),
     };
-  },
-  methods: {
-    handleTagUpdate() {
-      const tag = TagCollection.find().fetch();
-      if (tag) {
-        this.tagList = tag;
-      }
-    },
   },
   meteor: {
     $subscribe: {
       tags: [],
     },
-    currentUser() {
-      return Meteor.user();
-    },
-  },
-  computed: {
     tags() {
-      if (!this.currentUser) {
+      if (!Meteor.user()) {
         return [];
       }
 
       const tags = TagCollection.find({}).fetch();
-      this.tagList = tags;
-      return this.tagList;
+      return tags;
     },
   },
 };

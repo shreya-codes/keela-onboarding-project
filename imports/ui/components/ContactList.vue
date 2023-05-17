@@ -124,6 +124,24 @@ export default {
   meteor: {
     $subscribe: {
       tags: [],
+      contacts: [],
+    },
+    tags() {
+      if (!this.currentUser) {
+        return [];
+      }
+
+      const tags = TagCollection.find({}).fetch();
+      return tags;
+    },
+    contacts() {
+      //   console.log(!this.currentUser, this.currentUser, "------------------");
+
+      if (!Meteor.user()) {
+        return [];
+      }
+      const contacts = ContactsCollection.find();
+      return contacts;
     },
   },
   methods: {
@@ -146,35 +164,14 @@ export default {
     updateContact() {
       this.enableEdit = !this.enableEdit;
 
-      Meteor.call(
-        "contact.edit",
-        {
-          _id: this.contact._id,
-          firstName: this.firstName,
-          lastName: this.lastName,
-          phone: this.phone,
-          email: this.email,
-          tags: this.selectedTags,
-        },
-        (error, result) => {
-          if (error) {
-            // Handle error
-            console.error(error);
-          } else {
-            this.$emit("contactUpdate", result); // Emit the event with the organization ID
-          }
-        }
-      );
-    },
-  },
-  computed: {
-    tags() {
-      if (!this.currentUser) {
-        return [];
-      }
-
-      const tags = TagCollection.find({}).fetch();
-      return tags;
+      Meteor.call("contact.edit", {
+        _id: this.contact._id,
+        firstName: this.firstName,
+        lastName: this.lastName,
+        phone: this.phone,
+        email: this.email,
+        tags: this.selectedTags,
+      });
     },
   },
 };

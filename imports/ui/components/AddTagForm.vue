@@ -40,8 +40,6 @@ export default {
           // Handle error
           console.error(error);
           this.error = error;
-        } else {
-          this.$emit("tagUpdate", result); // Emit the event with the organization ID
         }
       });
       this.tag = "";

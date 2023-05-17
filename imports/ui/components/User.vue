@@ -5,11 +5,10 @@
         <div class="loading" v-if="!$subReady.allUsers">Loading ......</div>
         <div v-if="createAccess">
           <div>
-            <AddUsersForm @userUpdate="handleUserUpdate" />
+            <AddUsersForm />
           </div>
           <div>
             <UsersList
-              @userUpdate="handleUserUpdate"
               v-if="viewAccess"
               v-for="user in allUsers"
               v-bind:key="user._id"
@@ -38,35 +37,23 @@ export default {
   data() {
     return {
       roles: roles,
-      userList: [],
       viewAccess: checkUserRole(permission.USER_VIEW_PERMISSION),
       createAccess: checkUserRole(permission.USER_CREATE_PERMISSION),
+      currentUser: Meteor.user(),
     };
   },
-  methods: {
-    handleUserUpdate() {
-      const user = Meteor.users.find().fetch();
-      if (user) {
-        this.userList = user;
-      }
-    },
-  },
+
   meteor: {
     $subscribe: {
       allUsers: [],
     },
-    currentUser() {
-      return Meteor.user();
-    },
-  },
-  computed: {
+
     allUsers() {
-      if (!this.currentUser) {
+      if (!Meteor.user()) {
         return [];
       }
       const allUsers = Meteor.users.find({}).fetch();
-      this.userList = allUsers;
-      return this.userList;
+      return allUsers;
     },
   },
 };
