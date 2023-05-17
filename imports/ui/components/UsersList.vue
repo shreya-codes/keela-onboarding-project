@@ -74,6 +74,7 @@ export default {
       currentUser: Meteor.user(),
     };
   },
+
   methods: {
     editUser() {
       this.enableEdit = !this.enableEdit;
@@ -83,8 +84,6 @@ export default {
         if (error) {
           // Handle error
           console.error(error);
-        } else {
-          this.$emit("userUpdate", result); // Emit the event with the organization ID
         }
       });
     },
@@ -103,8 +102,6 @@ export default {
         if (error) {
           // Handle error
           console.error(error);
-        } else {
-          this.$emit("userUpdate", result); // Emit the event with the organization ID
         }
       });
     },

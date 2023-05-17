@@ -55,8 +55,6 @@ export default {
           if (error) {
             // Handle error
             console.error(error);
-          } else {
-            this.$emit("orgUpdate", result); // Emit the event with the organization ID
           }
         }
       );

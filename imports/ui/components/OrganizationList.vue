@@ -67,8 +67,6 @@ export default {
       Meteor.call("organizations.remove", this.org._id, (error, result) => {
         if (error) {
           console.error(error);
-        } else {
-          this.$emit("orgUpdate", result);
         }
       });
     },
@@ -85,8 +83,6 @@ export default {
           if (error) {
             // Handle error
             console.error(error);
-          } else {
-            this.$emit("orgUpdate", result); // Emit the event with the organization ID
           }
         }
       );

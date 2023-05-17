@@ -5,13 +5,12 @@
         <div class="loading" v-if="!$subReady.contacts">Loading ......</div>
         <div v-if="createAccess">
           <div>
-            <AddContactForm @contactUpdate="handleContactUpdate" />
+            <AddContactForm />
           </div>
         </div>
 
         <div>
           <ContactList
-            @contactUpdate="handleContactUpdate"
             v-if="viewAccess"
             v-for="contact in contacts"
             v-bind:key="contact._id"
@@ -43,51 +42,22 @@ export default {
       roles: roles,
       viewAccess: checkUserRole(permission.CONTACT_VIEW_PERMISSION),
       createAccess: checkUserRole(permission.CONTACT_CREATE_PERMISSION),
-      contactList: [],
+      currentUser: Meteor.user(),
     };
   },
   meteor: {
     $subscribe: {
-      tags: [],
       contacts: [],
     },
-    currentUser() {
-      return Meteor.user();
-    },
-  },
-  methods: {
-    handleContactUpdate() {
-      const contact = ContactsCollection.find().fetch();
-      if (contact) {
-        this.contactList = contact;
-      }
-    },
-  },
-  meteor: {
-    $subscribe: {
-      contacts: [],
-    },
-    currentUser() {
-      return Meteor.user();
-    },
-  },
-  computed: {
+
     contacts() {
-      if (!this.currentUser) {
+      //   console.log(!this.currentUser, this.currentUser, "------------------");
+
+      if (!Meteor.user()) {
         return [];
       }
-
-      const contacts = ContactsCollection.find({}).fetch();
-      this.contactList = contacts;
-      return this.contactList;
-    },
-    tags() {
-      if (!this.currentUser) {
-        return [];
-      }
-
-      const tags = TagCollection.find({}).fetch();
-      return tags;
+      const contacts = ContactsCollection.find();
+      return contacts;
     },
   },
 };

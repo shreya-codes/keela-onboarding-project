@@ -54,7 +54,6 @@
     </div>
   </form>
 </template>
-;
 
 <script>
 import { Meteor } from "meteor/meteor";
@@ -72,14 +71,19 @@ export default {
       name: "",
       password: "",
       errors: {},
+      currentUser: Meteor.user(),
     };
   },
   meteor: {
     $subscribe: {
       organizations: [],
     },
-    currentUser() {
-      return Meteor.user();
+    organizations() {
+      if (!this.currentUser) {
+        return [];
+      }
+      const orgs = OrganizationsCollection.find({}).fetch();
+      return orgs;
     },
   },
   methods: {
@@ -107,8 +111,6 @@ export default {
           if (error) {
             // Handle error
             console.error(error);
-          } else {
-            this.$emit("userUpdate", result); // Emit the event with the organization ID
           }
         }
       );
@@ -118,15 +120,5 @@ export default {
       this.selectedOrg = {};
     },
   },
-  computed: {
-    organizations() {
-      if (!this.currentUser) {
-        return [];
-      }
-      const orgs = OrganizationsCollection.find({}).fetch();
-      return orgs;
-    },
-  },
 };
 </script>
-;
